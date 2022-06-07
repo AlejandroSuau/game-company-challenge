@@ -15,7 +15,8 @@ MapWalker::MapWalker(const Map& map,
           target_map_index_(map.TranslateToOneBasedIndex(target)),
           out_path_(out_path),
           heuristic_(std::move(heuristic)) {
-    for (int i = 0; i < map.GetLocations().size(); ++i) {
+    const int nodes_size = static_cast<int>(map.GetLocations().size());
+    for (int i = 0; i < nodes_size; ++i) {
         nodes_.push_back(std::make_shared<Node>(i));
     }
 }
@@ -82,17 +83,20 @@ std::vector<std::shared_ptr<MapWalker::Node>> MapWalker::GetNeighbours(
         [&](const int i) { return (i % dimensions.first != 0); }, // E
         [&](const int i) { return ((i+1) % dimensions.first != 0); }, // W
         [&](const int i) { return (i >= 0); }, // N
-        [&](const int i) { return (i < nodes_.size()); }, // S
+        [&](const int i) { return (i < static_cast<int>(nodes_.size())); }, // S
     };
     
     // TODO: improvement, make the path look not ugly.
     // if (x + y) % 2 == 0: reverse both vectors to obtain: # S N W E
     
     std::vector<std::shared_ptr<Node>> neighbours;
-    for (int i = 0; i < neighbour_indexes.size(); ++i) {
-        const auto index = neighbour_indexes[i];
-        if (is_valid_neighbour[i](index) && map_.IsTraversable(index))
-            neighbours.push_back(nodes_[index]);
+    int neighbour_indexes_size = static_cast<int>(neighbour_indexes.size());
+    for (int i = 0; i < neighbour_indexes_size; ++i) {
+        const int neighbour_index = neighbour_indexes[i];
+        if (is_valid_neighbour[i](neighbour_index) &&
+                map_.IsTraversable(neighbour_index)) {
+            neighbours.push_back(nodes_[neighbour_index]);
+        }
     }
     
     return neighbours;

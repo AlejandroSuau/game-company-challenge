@@ -26,7 +26,7 @@ bool FindPath(std::pair<int, int> start,
     return map_walker.FindPath();
 }
 
-int main(int argc, const char * argv[]) {
+int main() {
     std::pair<int, int> start = {0, 5};
     std::pair<int, int> target = {9, 5};
     std::vector<int> map_locations = {

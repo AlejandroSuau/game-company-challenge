@@ -12,11 +12,11 @@ int Map::TranslateToOneBasedIndex(const Cell cell) const {
 
 Map::Cell Map::TranslateToCell(const int index) const {
     int column = index % dimensions_.first;
-    int row = std::floor(index / dimensions_.first);
+    int row = static_cast<int>(std::floor(index / dimensions_.first));
     return Cell{column, row};
 }
 
-bool Map::IsTraversable(const int index) const {
+int Map::IsTraversable(const int index) const {
     return locations_[index];
 }
 

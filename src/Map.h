@@ -13,7 +13,7 @@ public:
     Map(const std::pair<int, int> dimensions,
         const std::vector<int>& locations);
     
-    bool IsTraversable(const int index) const;
+    int IsTraversable(const int index) const;
     
     int TranslateToOneBasedIndex(const Cell cell) const;
     Cell TranslateToCell(const int index) const;
