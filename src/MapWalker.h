@@ -32,16 +32,17 @@ public:
     MapWalker(const Map& map,
               const Map::Cell start,
               const Map::Cell target,
+              std::vector<int>& out_path,
               std::unique_ptr<IHeuristic> heuristic);
     
     bool FindPath();
     
-//private:
+private:
     const Map& map_;
     const int start_map_index_;
     const int target_map_index_;
+    std::vector<int>& out_path_; // Start is not included but end is.
     std::unique_ptr<IHeuristic> heuristic_;
-    std::vector<int> out_path_; // Start is not included but end is.
     
     std::vector<std::shared_ptr<Node>> nodes_;
     

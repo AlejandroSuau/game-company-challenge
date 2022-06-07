@@ -7,18 +7,28 @@
 #include "MapWalker.h"
 #include "Heuristic.h"
 
-#include "BinaryHeap.h"
 
-
-// API Function given:
-bool FindPath(std::pair<int, int> Start,
-              std::pair<int, int> Target,
-              const std::vector<int>& Map,
-              std::pair<int, int> MapDimensions,
-              std::vector<int>& OutPath);
+// API Function definition given:
+bool FindPath(std::pair<int, int> start,
+              std::pair<int, int> target,
+              const std::vector<int>& map,
+              std::pair<int, int> map_dimensions,
+              std::vector<int>& out_path) {
+    const Map custom_map(map_dimensions, map);
+    const Map::Cell cell_start{start.first, start.second};
+    const Map::Cell cell_target{target.first, target.second};
+    MapWalker map_walker(custom_map,
+                         cell_start,
+                         cell_target,
+                         out_path,
+                         std::make_unique<Manhattan>());
+    
+    return map_walker.FindPath();
+}
 
 int main(int argc, const char * argv[]) {
-    std::pair<int, int> map_dimensions = {10, 6};
+    std::pair<int, int> start = {0, 5};
+    std::pair<int, int> target = {9, 5};
     std::vector<int> map_locations = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 0, 0, 0, 0, 0, 0, 1, 1, 1,
@@ -27,38 +37,32 @@ int main(int argc, const char * argv[]) {
         1, 0, 1, 0, 1, 1, 1, 1, 0, 1,
         1, 1, 1, 0, 1, 1, 1, 1, 0, 1,
     };
-    const Map map(map_dimensions, map_locations);
-    MapWalker map_walker(map, {0, 5}, {9, 5}, std::make_unique<Manhattan>());
+    std::pair<int, int> map_dimensions = {10, 6};
+    std::vector<int> out_path = {};
+    const bool did_find_path = FindPath(
+        start, target, map_locations, map_dimensions, out_path);
     
-    /*std::pair<int, int> map_dimensions = {5, 4};
-    std::vector<int> map_locations = {
-        1, 0, 1, 0, 1,
-        1, 0, 1, 0, 1,
-        1, 0, 1, 1, 1,
-        1, 1, 1, 1, 1,
-    };
-    const Map map(map_dimensions, map_locations);
-    MapWalker map_walker(map, {0, 0}, {4, 3}, std::make_unique<Manhattan>());*/
-    map_walker.FindPath();
-    
+    if (did_find_path) {
+        std::cout << "Path found: " << std::endl;
+        for (const auto index : out_path) std:: cout << index << " ";
+        std::cout << std::endl;
+    } else {
+        std::cout << "Not path found." << std::endl;
+    }
     
      // Testing solution print.
-     for (int i = 0; i < map_dimensions.second; ++i) { // row
+     /*for (int i = 0; i < map_dimensions.second; ++i) { // row
         for (int j = 0; j < map_dimensions.first; ++j) { // col
             const auto index = i * map_dimensions.first + j;
-            if (std::find(map_walker.out_path_.begin(),
-                          map_walker.out_path_.end(), index)
-                != map_walker.out_path_.end()) {
+            if (std::find(out_path.begin(),
+                          out_path.end(), index) != out_path.end()) {
                 std::cout << " x ";
             } else {
-                if (map.IsTraversable(index))
-                    std::cout << " - ";
-                else
-                    std::cout << " 0 ";
+                std::cout << "   ";
             }
         }
         std::cout << std::endl;
-    }
+    }*/
     
     return 0;
 }

@@ -11,13 +11,6 @@ class BinaryHeap {
 public:
     BinaryHeap();
     
-    /*struct Comparator {
-    public:
-        int operator()(const T& left, const T& right) {
-            return (left > right);
-        }
-    };*/
-    
     // Both methods Push and Update return the index in the heap.
     std::size_t Push(T item);
     std::size_t Update(std::size_t index, T new_item);

@@ -8,12 +8,13 @@
 MapWalker::MapWalker(const Map& map,
                      const Map::Cell start,
                      const Map::Cell target,
+                     std::vector<int>& out_path,
                      std::unique_ptr<IHeuristic> heuristic)
         : map_(map),
           start_map_index_(map.TranslateToOneBasedIndex(start)),
           target_map_index_(map.TranslateToOneBasedIndex(target)),
-          heuristic_(std::move(heuristic)),
-          out_path_{} {
+          out_path_(out_path),
+          heuristic_(std::move(heuristic)) {
     for (int i = 0; i < map.GetLocations().size(); ++i) {
         nodes_.push_back(std::make_shared<Node>(i));
     }

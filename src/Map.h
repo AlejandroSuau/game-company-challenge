@@ -10,7 +10,8 @@ public:
         int row;
     };
     
-    Map(const std::pair<int, int> dimensions, std::vector<int> locations);
+    Map(const std::pair<int, int> dimensions,
+        const std::vector<int>& locations);
     
     bool IsTraversable(const int index) const;
     
@@ -24,5 +25,5 @@ public:
     
 private:
     const std::pair<int, int> dimensions_; // <Width, Height>.
-    const std::vector<int> locations_; // Traversable = 1; 0 Otherwise.
+    const std::vector<int>& locations_; // Traversable = 1; 0 Otherwise.
 };

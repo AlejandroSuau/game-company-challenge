@@ -3,8 +3,8 @@
 #include <cmath>
 
 
-Map::Map(const std::pair<int, int> dimensions, std::vector<int> locations)
-    : dimensions_(dimensions), locations_(std::move(locations)) {}
+Map::Map(const std::pair<int, int> dimensions, const std::vector<int>& locations)
+    : dimensions_(dimensions), locations_(locations) {}
 
 int Map::TranslateToOneBasedIndex(const Cell cell) const {
     return (cell.row * dimensions_.first + cell.column);
