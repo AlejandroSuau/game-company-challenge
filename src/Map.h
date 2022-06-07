@@ -17,8 +17,6 @@ public:
     int TranslateToOneBasedIndex(const Cell cell) const;
     Cell TranslateToCell(const int index) const;
     
-    std::vector<int> GetNeighbours(const int index) const;
-    
     std::pair<int, int> GetCoordAbsDifferencesBetweenIndexes(
         const int index_a, const int index_b) const;
     const std::pair<int, int> GetDimensions() const;
