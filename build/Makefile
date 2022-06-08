@@ -4,7 +4,7 @@ CPPFLAGS = -std=c++14 -Wpedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-pro
 CPPFLAGS += -fsanitize=address -fno-omit-frame-pointer -g
 
 OBJECTS = \
-    main.o Heuristic.o Map.o MapWalker.o
+    main.o BinaryHeap.o Heuristic.o Map.o MapWalker.o
 
 all: game
 
