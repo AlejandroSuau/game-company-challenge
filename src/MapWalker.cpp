@@ -1,7 +1,6 @@
 #include "MapWalker.h"
 
 #include <memory>
-#include <algorithm>
 #include <functional>
 
 
@@ -22,10 +21,9 @@ MapWalker::MapWalker(const Map& map,
 }
 
 bool MapWalker::FindPath() {
-    auto start_node = std::make_shared<Node>(start_map_index_);
-    auto heap_index = nodes_open_.Push(start_node);
+    auto start_node = nodes_[start_map_index_];
+    nodes_open_.Push(start_node);
     start_node->is_open = true;
-    start_node->heap_index = heap_index;
     
     while(nodes_open_.Size() > 0) {
         auto node = nodes_open_.Top();
@@ -44,24 +42,8 @@ bool MapWalker::FindPath() {
             const int g_cost = node->g + 1;
             if (!neighbour->is_open || g_cost < neighbour->g) {
                 neighbour->g = g_cost;
-                
-                const auto dx_dy = map_.GetCoordAbsDifferencesBetweenIndexes(
-                    neighbour->map_index, target_map_index_);
-                const int dx = dx_dy.first;
-                const int dy = dx_dy.second;
-                neighbour->h = heuristic_->ComputeDistance(dx, dy);
-                neighbour->f = neighbour->g + neighbour->h;
-                
                 neighbour->parent = node;
-                std::size_t new_heap_index;
-                if (neighbour->is_open) {
-                    new_heap_index = nodes_open_.Update(
-                        neighbour->heap_index, neighbour);
-                } else {
-                    new_heap_index = nodes_open_.Push(neighbour);
-                    neighbour->is_open = true;
-                }
-                neighbour->heap_index = new_heap_index;
+                UpdateNeighbourDataAndHeap(neighbour);
             }
         }
     }
@@ -69,7 +51,7 @@ bool MapWalker::FindPath() {
     return false;
 }
 
-std::vector<std::shared_ptr<MapWalker::Node>> MapWalker::GetNeighbours(
+std::vector<std::shared_ptr<Node>> MapWalker::GetNeighbours(
         const int index) const {
     const auto dimensions = map_.GetDimensions();
     std::vector<int> neighbour_indexes = {
@@ -86,7 +68,7 @@ std::vector<std::shared_ptr<MapWalker::Node>> MapWalker::GetNeighbours(
         [&](const int i) { return (i < static_cast<int>(nodes_.size())); }, // S
     };
     
-    // TODO: improvement, make the path look not ugly.
+    // TODO: improvement, make the path look less ugly.
     // if (x + y) % 2 == 0: reverse both vectors to obtain: # S N W E
     
     std::vector<std::shared_ptr<Node>> neighbours;
@@ -102,6 +84,24 @@ std::vector<std::shared_ptr<MapWalker::Node>> MapWalker::GetNeighbours(
     return neighbours;
 }
 
+void MapWalker::UpdateNeighbourDataAndHeap(std::shared_ptr<Node> neighbour) {
+    const auto dx_dy = map_.GetCoordAbsDifferencesBetweenIndexes(
+        neighbour->map_index, target_map_index_);
+    const int h = heuristic_->ComputeDistance(dx_dy.first, dx_dy.second);
+    const int f = neighbour->g + h;
+    
+    neighbour->h = h;
+    if (!neighbour->is_open) {
+        neighbour->f = f;
+        neighbour->is_open = true;
+        nodes_open_.Push(neighbour);
+    } else {
+        const bool sort_up = (f < neighbour->f);
+        neighbour->f = f;
+        nodes_open_.Update(neighbour->heap_index, sort_up);
+    }
+}
+
 void MapWalker::ComputeOutPath(std::shared_ptr<Node> last_node) {
     if (last_node->parent == nullptr) return;
     
@@ -109,5 +109,6 @@ void MapWalker::ComputeOutPath(std::shared_ptr<Node> last_node) {
         out_path_.push_back(last_node->map_index);
         last_node = last_node->parent;
     }
+    
     std::reverse(out_path_.begin(), out_path_.end());
 }
