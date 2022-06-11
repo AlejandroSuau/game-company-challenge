@@ -26,15 +26,16 @@ private:
     std::vector<int>& out_path_; // Start is not included but end is.
     std::unique_ptr<IHeuristic> heuristic_;
     
-    std::vector<std::shared_ptr<Node>> nodes_;
+    std::vector<Node> nodes_;
     
     // Priority Queues doesn't allow to change the priority
     // so we needed to create a custom data structure: Binary heap.
     // This allows to update and insert with a complexity of O(log(N)).
     BinaryHeap nodes_open_;
     
-    std::vector<std::shared_ptr<Node>> GetNeighbours(const int index) const;
+    std::vector<Node*> GetNeighbours(const int index);
     
-    void UpdateNeighbourDataAndHeap(std::shared_ptr<Node> neighbour);
-    void ComputeOutPath(std::shared_ptr<Node> last_node);
+    void UpdateNodeNeighbours(Node* node);
+    void UpdateNeighbourDataAndHeap(Node* neighbour);
+    void ComputeOutPath(Node* last_node);
 };

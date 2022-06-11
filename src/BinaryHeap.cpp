@@ -3,11 +3,13 @@
 
 BinaryHeap::BinaryHeap() : size_(0) {}
 
-std::shared_ptr<Node> BinaryHeap::Top() {
+Node* BinaryHeap::Top() {
+    if (items_.empty()) return nullptr;
+    
     return items_[0].item;
 }
 
-void BinaryHeap::Push(std::shared_ptr<Node> item) {
+void BinaryHeap::Push(Node* item) {
     BinaryHeapItem heap_item{size_, item};
     item->heap_index = size_;
     items_.push_back(heap_item);
@@ -55,6 +57,8 @@ std::size_t BinaryHeap::GetChildRightIndex(std::size_t index) const {
 }
 
 void BinaryHeap::Pop() {
+    if (items_.empty()) return;
+    
     --size_;
     items_[0] = items_[size_];
     items_[0].index = 0;

@@ -7,23 +7,23 @@
 
 
 // Custom Binary Heap for A* Algorithm.
-// TODO: Create a generic one, where T is the element, shared_ptr and C is
+// TODO: Create a generic one, where T is the element and C is
 // the comparator.
 // template<class T, class C>
 class BinaryHeap {
 public:
     BinaryHeap();
     
-    void Push(std::shared_ptr<Node> item);
+    void Push(Node* item);
     void Update(std::size_t index, bool sort_up);
-    std::shared_ptr<Node> Top();
+    Node* Top();
     void Pop();
     std::size_t Size() const;
     
 private:
     struct BinaryHeapItem {
         std::size_t index;
-        std::shared_ptr<Node> item;
+        Node* item;
     };
     
     Node::Comparator comparator;
