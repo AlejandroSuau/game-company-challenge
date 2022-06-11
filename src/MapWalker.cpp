@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <functional>
+#include <algorithm>
 
 
 MapWalker::MapWalker(const Map& map,
@@ -54,32 +55,26 @@ bool MapWalker::FindPath() {
 std::vector<std::shared_ptr<Node>> MapWalker::GetNeighbours(
         const int index) const {
     const auto dimensions = map_.GetDimensions();
-    std::vector<int> neighbour_indexes = {
-        index + 1, // E
-        index - 1, // W
-        index - dimensions.first, // N
-        index + dimensions.first // S
-    };
+    std::vector<std::shared_ptr<Node>> neighbours;
     
-    std::vector<std::function<bool(int)>> is_valid_neighbour = {
-        [&](const int i) { return (i % dimensions.first != 0); }, // E
-        [&](const int i) { return ((i+1) % dimensions.first != 0); }, // W
-        [&](const int i) { return (i >= 0); }, // N
-        [&](const int i) { return (i < static_cast<int>(nodes_.size())); }, // S
-    };
+    const int e_index = index + 1;
+    if ((e_index) % dimensions.first != 0 && map_.IsTraversable(e_index))
+        neighbours.push_back(nodes_[e_index]);
+    
+    const int w_index = index - 1;
+    if (index % dimensions.first != 0 && map_.IsTraversable(w_index))
+        neighbours.push_back(nodes_[w_index]);
+    
+    const int n_index = index - dimensions.first;
+    if (n_index >= 0 && map_.IsTraversable(n_index))
+        neighbours.push_back(nodes_[n_index]);
+    
+    const int s_index = index + dimensions.first;
+    if (s_index < nodes_.size() && map_.IsTraversable(s_index))
+        neighbours.push_back(nodes_[s_index]);
     
     // TODO: improvement, make the path look less ugly.
     // if (x + y) % 2 == 0: reverse both vectors to obtain: # S N W E
-    
-    std::vector<std::shared_ptr<Node>> neighbours;
-    int neighbour_indexes_size = static_cast<int>(neighbour_indexes.size());
-    for (int i = 0; i < neighbour_indexes_size; ++i) {
-        const int neighbour_index = neighbour_indexes[i];
-        if (is_valid_neighbour[i](neighbour_index) &&
-                map_.IsTraversable(neighbour_index)) {
-            neighbours.push_back(nodes_[neighbour_index]);
-        }
-    }
     
     return neighbours;
 }
