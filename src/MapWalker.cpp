@@ -72,7 +72,7 @@ std::vector<Node*> MapWalker::GetNeighbours(const int index) {
         neighbours.push_back(&nodes_[n_index]);
     
     const int s_index = index + dimensions.first;
-    if (s_index < nodes_.size() && map_.IsTraversable(s_index))
+    if (s_index < static_cast<int>(nodes_.size()) && map_.IsTraversable(s_index))
         neighbours.push_back(&nodes_[s_index]);
     
     // TODO: improvement, make the path look less ugly.
