@@ -1,18 +1,18 @@
 CXX = g++
-VPATH = ../src 
-CPPFLAGS = -std=c++14 -Wpedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow -Wcast-qual -Wnested-externs
-CPPFLAGS += -fsanitize=address -fno-omit-frame-pointer -g
-
-OBJECTS = \
-    main.o BinaryHeap.o Heuristic.o Map.o MapWalker.o
+CPPFLAGS = -std=c++14 -Wpedantic -Wall -Wextra
+CPPFLAGS += -O2
+#CPPFLAGS += -fsanitize=address -fno-omit-frame-pointer -g
+SOURCE = $(wildcard ../src/*.cpp)
+OBJECTS = $(patsubst ../src/%.cpp, %.o, $(SOURCE))
 
 all: game
 
 game: $(OBJECTS)
-	$(CXX) $(CPPFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(OBJECTS) -o game
 
--include $(OBJECTS:.o=.d)
+%.o: ../src/%.cpp
+	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o *.d game
+	rm -f *.o game
 
