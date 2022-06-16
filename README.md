@@ -1,6 +1,6 @@
-# Paradox Interactive Interview Challenge
+# Game Company Interview Challenge
 
-_This is an API Challenge developed for Paradox Interactive company._
+_This is an API Challenge developed for a game company._
 
 > "Every failed experiment is one step closer to success." - Denzel Washington.
 
