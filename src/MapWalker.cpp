@@ -21,9 +21,9 @@ MapWalker::MapWalker(const Map& map,
 }
 
 bool MapWalker::FindPath() {
-    auto* start_node = &nodes_[start_map_index_];
-    nodes_open_.Push(start_node);
-    start_node->is_open = true;
+    auto& start_node = nodes_[start_map_index_];
+    nodes_open_.Push(&start_node);
+    start_node.is_open = true;
     
     while(nodes_open_.Size() > 0) {
         auto* node = nodes_open_.Top();
@@ -31,27 +31,27 @@ bool MapWalker::FindPath() {
         node->is_closed = true;
         
         if (node->map_index == target_map_index_) {
-            ComputeOutPath(node);
+            ComputeOutPath(*node);
             return true;
         }
         
-        UpdateNodeNeighbours(node);
+        UpdateNodeNeighbours(*node);
     }
     
     return false;
 }
 
-void MapWalker::UpdateNodeNeighbours(Node* node) {
+void MapWalker::UpdateNodeNeighbours(Node& node) {
     Neighbours neighbours = {nullptr, nullptr, nullptr, nullptr};
-    FillIndexNeighbours(node->map_index, neighbours);
-    for (auto neighbour : neighbours) {
+    FillIndexNeighbours(node.map_index, neighbours);
+    for (auto* neighbour : neighbours) {
         if (neighbour == nullptr || neighbour->is_closed) continue;
         
-        const int g_cost = node->g + 1;
+        const int g_cost = node.g + 1;
         if (!neighbour->is_open || g_cost < neighbour->g) {
             neighbour->g = g_cost;
-            neighbour->parent = node;
-            UpdateNeighbourDataAndHeap(neighbour);
+            neighbour->parent = &node;
+            UpdateNeighbourDataAndHeap(*neighbour);
         }
     }
 }
@@ -75,30 +75,30 @@ void MapWalker::FillIndexNeighbours(const int index, Neighbours& neighbours) {
         neighbours[3] = &nodes_[s_index];
 }
 
-void MapWalker::UpdateNeighbourDataAndHeap(Node* neighbour) {
+void MapWalker::UpdateNeighbourDataAndHeap(Node& neighbour) {
     const auto dx_dy = map_.GetCoordAbsDifferencesBetweenIndexes(
-        neighbour->map_index, target_map_index_);
+        neighbour.map_index, target_map_index_);
     const int h = heuristic_->ComputeDistance(dx_dy.first, dx_dy.second);
-    const int f = neighbour->g + h;
+    const int f = neighbour.g + h;
     
-    neighbour->h = h;
-    if (!neighbour->is_open) {
-        neighbour->f = f;
-        neighbour->is_open = true;
-        nodes_open_.Push(neighbour);
+    neighbour.h = h;
+    if (!neighbour.is_open) {
+        neighbour.f = f;
+        neighbour.is_open = true;
+        nodes_open_.Push(&neighbour);
     } else {
-        const bool sort_up = (f < neighbour->f);
-        neighbour->f = f;
-        nodes_open_.Update(neighbour->heap_index, sort_up);
+        const bool sort_up = (f < neighbour.f);
+        neighbour.f = f;
+        nodes_open_.Update(neighbour.heap_index, sort_up);
     }
 }
 
-void MapWalker::ComputeOutPath(Node* last_node) {
-    if (last_node->parent == nullptr) return;
+void MapWalker::ComputeOutPath(Node& last_node) {
+    if (last_node.parent == nullptr) return;
     
-    while (last_node->parent != nullptr) {
-        out_path_.push_back(last_node->map_index);
-        last_node = last_node->parent;
+    while (last_node.parent != nullptr) {
+        out_path_.push_back(last_node.map_index);
+        last_node = *last_node.parent;
     }
     
     std::reverse(out_path_.begin(), out_path_.end());

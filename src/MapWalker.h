@@ -37,7 +37,7 @@ private:
     using Neighbours = std::array<Node*, 4>;
     void FillIndexNeighbours(const int index, Neighbours& neighbours);
     
-    void UpdateNodeNeighbours(Node* node);
-    void UpdateNeighbourDataAndHeap(Node* neighbour);
-    void ComputeOutPath(Node* last_node);
+    void UpdateNodeNeighbours(Node& node);
+    void UpdateNeighbourDataAndHeap(Node& neighbour);
+    void ComputeOutPath(Node& last_node);
 };
