@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <array>
 
 #include "Map.h"
 #include "Heuristic.h"
@@ -33,7 +34,8 @@ private:
     // This allows to update and insert with a complexity of O(log(N)).
     BinaryHeap nodes_open_;
     
-    std::vector<Node*> GetNeighbours(const int index);
+    using Neighbours = std::array<Node*, 4>;
+    void FillIndexNeighbours(const int index, Neighbours& neighbours);
     
     void UpdateNodeNeighbours(Node* node);
     void UpdateNeighbourDataAndHeap(Node* neighbour);

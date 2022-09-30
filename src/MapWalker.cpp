@@ -42,9 +42,10 @@ bool MapWalker::FindPath() {
 }
 
 void MapWalker::UpdateNodeNeighbours(Node* node) {
-    auto neighbours = GetNeighbours(node->map_index);
+    Neighbours neighbours = {nullptr, nullptr, nullptr, nullptr};
+    FillIndexNeighbours(node->map_index, neighbours);
     for (auto neighbour : neighbours) {
-        if (neighbour->is_closed) continue;
+        if (neighbour == nullptr || neighbour->is_closed) continue;
         
         const int g_cost = node->g + 1;
         if (!neighbour->is_open || g_cost < neighbour->g) {
@@ -55,30 +56,23 @@ void MapWalker::UpdateNodeNeighbours(Node* node) {
     }
 }
 
-std::vector<Node*> MapWalker::GetNeighbours(const int index) {
+void MapWalker::FillIndexNeighbours(const int index, Neighbours& neighbours) {
     const auto dimensions = map_.GetDimensions();
-    std::vector<Node*> neighbours;
-    
     int e_index = index + 1;
     if ((e_index) % dimensions.first != 0 && map_.IsTraversable(e_index))
-        neighbours.push_back(&nodes_[e_index]);
+        neighbours[0] = &nodes_[e_index];
     
     const int w_index = index - 1;
     if (index % dimensions.first != 0 && map_.IsTraversable(w_index))
-        neighbours.push_back(&nodes_[w_index]);
+        neighbours[1] = &nodes_[w_index];
     
     const int n_index = index - dimensions.first;
     if (n_index >= 0 && map_.IsTraversable(n_index))
-        neighbours.push_back(&nodes_[n_index]);
+        neighbours[2] = &nodes_[n_index];
     
     const int s_index = index + dimensions.first;
     if (s_index < static_cast<int>(nodes_.size()) && map_.IsTraversable(s_index))
-        neighbours.push_back(&nodes_[s_index]);
-    
-    // TODO: improvement, make the path look less ugly.
-    // if (x + y) % 2 == 0: reverse both vectors to obtain: # S N W E
-    
-    return neighbours;
+        neighbours[3] = &nodes_[s_index];
 }
 
 void MapWalker::UpdateNeighbourDataAndHeap(Node* neighbour) {
